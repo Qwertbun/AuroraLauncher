@@ -1,21 +1,23 @@
 import { randomUUID } from "crypto";
 
+import { Lang } from "@root/components";
 import { AuthProviderConfig } from "@root/components/auth/providers";
 import { HjsonCommented, HjsonHelper } from "@root/utils";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 
 import { ApiConfig } from "./ApiConfig";
-import { Lang } from "@root/components";
+import { SkinConfig } from "./SkinConfig";
 
 export class LauncherServerConfig extends HjsonCommented {
     configVersion: number;
     projectID: string;
     projectName: string;
     lang: Lang;
-    branch: branch;
+    branch: ReleaseBranch;
     env: Environment;
     mirrors: string[];
     auth: AuthProviderConfig;
+    skin: SkinConfig;
     api: ApiConfig;
 
     static getDefaults(): LauncherServerConfig {
@@ -28,6 +30,7 @@ export class LauncherServerConfig extends HjsonCommented {
         config.env = Environment.DEV;
         config.mirrors = [];
         config.auth = AuthProviderConfig.getDefaultConfig();
+        config.skin = SkinConfig.getDefaultConfig();
         config.api = ApiConfig.getDefaultConfig();
         return config;
     }
@@ -57,4 +60,4 @@ export enum Environment {
     DEV = "dev",
 }
 
-type branch = "stable" | "latest" | "dev";
+type ReleaseBranch = "stable" | "dev";

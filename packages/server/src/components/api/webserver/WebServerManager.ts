@@ -71,7 +71,7 @@ export class WebServerManager {
     }
 
     private redirectListener(req: http.IncomingMessage, res: http.ServerResponse) {
-        if (req.headers["user-agent"].startsWith("Java")) {
+        if (req.headers["user-agent"]?.startsWith("Java")) {
             res.setHeader("X-Authlib-Injector-API-Location", "/authlib");
             return res.end();
         }
@@ -91,7 +91,7 @@ export class WebServerManager {
         url = url.replace(/\/{2,}/g, "/").slice(6);
         if (url.at(-1) === "/") url = url.slice(0, -1);
 
-        const path = join(StorageHelper.gameFilesDir, url);
+        const path = join(StorageHelper.gameFilesDir, decodeURIComponent(url));
 
         // Защита от выхода из директории
         if (!path.startsWith(StorageHelper.gameFilesDir)) {

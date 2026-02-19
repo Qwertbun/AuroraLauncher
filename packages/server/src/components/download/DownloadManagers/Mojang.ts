@@ -1,7 +1,8 @@
 import { mkdir, writeFile } from "fs/promises";
 import path, { resolve } from "path";
 
-import { HttpHelper, JsonHelper, ProfileLibrary } from "@aurora-launcher/core";
+import { HttpHelper, JsonHelper, OS, ProfileLibrary } from "@aurora-launcher/core";
+import { MojangAssets } from "@aurora-launcher/core";
 import { LogHelper, ProgressHelper, StorageHelper } from "@root/utils";
 import { Service } from "typedi";
 
@@ -9,7 +10,6 @@ import {
     Action,
     Artifact,
     AssetIndex,
-    Assets,
     Classifiers,
     Client,
     Library,
@@ -64,7 +64,7 @@ export class MojangManager extends AbstractDownloadManager {
 
         try {
             await mkdir(clientDirPath);
-        } catch (err) {
+        } catch {
             return LogHelper.error(this.langManager.getTranslate.DownloadManager.dirExist);
         }
 
@@ -99,12 +99,14 @@ export class MojangManager extends AbstractDownloadManager {
     protected async resolveAssets(assetIndex: AssetIndex) {
         const indexPath = resolve(StorageHelper.assetsIndexesDir, `${assetIndex.id}.json`);
 
-        LogHelper.info("Downloading assets");
+        LogHelper.info(
+            this.langManager.getTranslate.DownloadManager.MojangManager.client.downloadAssets,
+        );
 
         const assetsFile = await HttpHelper.getResource(assetIndex.url);
         await writeFile(indexPath, assetsFile);
 
-        const { objects } = JsonHelper.fromJson<Assets>(assetsFile);
+        const { objects } = JsonHelper.fromJson<MojangAssets>(assetsFile);
 
         const assetsHashes = Object.values(objects)
             .sort((a, b) => b.size - a.size)
@@ -135,7 +137,10 @@ export class MojangManager extends AbstractDownloadManager {
             //     this.langManager.getTranslate.DownloadManager.MojangManager
             //         .assets.downloadErr
             // );
-            LogHelper.info("Downloading assets failed");
+            LogHelper.error(
+                this.langManager.getTranslate.DownloadManager.MojangManager.client
+                    .downloadAssetsErr,
+            );
             LogHelper.debug(error);
             return;
         } finally {
@@ -145,7 +150,9 @@ export class MojangManager extends AbstractDownloadManager {
         //     this.langManager.getTranslate.DownloadManager.MojangManager.assets
         //         .success
         // );
-        LogHelper.info("Assets downloaded");
+        LogHelper.info(
+            this.langManager.getTranslate.DownloadManager.MojangManager.client.downloadAssetsSuc,
+        );
 
         return true;
     }
@@ -165,7 +172,9 @@ export class MojangManager extends AbstractDownloadManager {
             })
             .flat();
 
-        LogHelper.info("Downloading libraries");
+        LogHelper.info(
+            this.langManager.getTranslate.DownloadManager.MojangManager.client.downloadLib,
+        );
         const progressBar = ProgressHelper.getProgress("{bar} {percentage}% {value}/{total}", 40);
         progressBar.start(librariesList.length, 0);
 
@@ -183,26 +192,35 @@ export class MojangManager extends AbstractDownloadManager {
                 },
             );
         } catch (error) {
-            LogHelper.info("Downloading libraries failed");
+            LogHelper.error(
+                this.langManager.getTranslate.DownloadManager.MojangManager.client.downloadLibErr,
+            );
             LogHelper.debug(error);
             return;
         } finally {
             progressBar.stop();
         }
-        LogHelper.info("Libraries downloaded");
+        LogHelper.info(
+            this.langManager.getTranslate.DownloadManager.MojangManager.client.downloadLibSuc,
+        );
 
         return librariesList;
     }
 
     #resolveNewNative(library: Library): ProfileLibrary {
-        const { os, arch } = library.name.match(/natives-(?<os>\w+)(?:-(?<arch>\w+))?/).groups;
+        const rules = library.rules;
+
+        const { arch } = library.name.match(/natives-\w+(?:-(?<arch>\w+))?/).groups;
+        if (arch) {
+            (rules.find((rule) => rule.action === Action.Allow).os as OS).arch = arch;
+        }
 
         const { path, sha1 } = library.downloads.artifact;
         return {
             path,
             sha1,
             type: "native",
-            rules: [{ action: Action.Allow, os: { name: <Name>os, arch } }],
+            rules,
         };
     }
 

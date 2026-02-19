@@ -1,12 +1,17 @@
 import { AuthResponseData } from "@aurora-launcher/core";
 import { LauncherServerConfig } from "@root/components/config/utils/LauncherServerConfig";
+import { SkinManager } from "../../skin/SkinManager";
 
 export interface AuthProviderConstructor {
-    new (configManager: LauncherServerConfig): AuthProvider;
+    new (configManager: LauncherServerConfig, skinManager: SkinManager): AuthProvider;
 }
 
 export interface AuthProvider {
-    auth(username: string, password: string): PromiseOr<AuthResponseData>;
+    auth(
+        username: string,
+        password: string,
+        metadata?: AuthProviderAuthMetadata,
+    ): PromiseOr<AuthResponseData>;
 
     join(accessToken: string, userUUID: string, serverID: string): PromiseOr<boolean>;
 
@@ -23,6 +28,11 @@ export class AuthProviderConfig {
     static getDefaultConfig(): AuthProviderConfig {
         return { type: "accept" };
     }
+}
+
+export interface AuthProviderAuthMetadata {
+    hwid?: string;
+    hwidVersion?: string;
 }
 
 export interface HasJoinedResponseData {

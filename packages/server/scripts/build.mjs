@@ -1,4 +1,6 @@
 import { esbuildDecorators } from "@aurora-launcher/esbuild-decorators";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { context } from "esbuild";
 import minimist from "minimist";
 
@@ -18,11 +20,44 @@ if (!watch) {
     console.time("Build successfully");
 }
 
+const skipSwcForNodeModules = {
+    name: "skip-swc-for-node-modules",
+    setup(build) {
+        build.onLoad({ filter: /\.[jt]sx?$/ }, async (args) => {
+            const normalizedPath = path.normalize(args.path);
+            if (!normalizedPath.includes(`${path.sep}node_modules${path.sep}`)) {
+                return;
+            }
+
+            const extension = path.extname(normalizedPath).toLowerCase();
+            const loaderMap = {
+                ".js": "js",
+                ".jsx": "jsx",
+                ".ts": "ts",
+                ".tsx": "tsx",
+            };
+
+            return {
+                contents: await readFile(normalizedPath, "utf8"),
+                loader: loaderMap[extension] ?? "js",
+            };
+        });
+    },
+};
+
 const ctx = await context({
     platform: "node",
     target: "node20",
     bundle: true,
-    plugins: [esbuildDecorators()],
+    external: [
+        "@azure/app-configuration",
+        "@azure/keyvault-secrets",
+        "oci-common",
+        "oci-objectstorage",
+        "oci-secrets",
+        "oracledb",
+    ],
+    plugins: [skipSwcForNodeModules, esbuildDecorators()],
     entryPoints: ["src/app.ts"],
     outfile: "dist/LauncherServer.js",
     ...args,

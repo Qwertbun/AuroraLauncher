@@ -31,6 +31,12 @@
         "MojangManager": {
             "client": {
                 "download": "Client downloading, please wait...",
+                "downloadAssets": "Downloading assets",
+                "downloadAssetsSuc": "Assets downloaded",
+                "downloadAssetsErr": "Downloading assets failed",
+                "downloadLib": "Downloading libraries",
+                "downloadLibErr": "Downloading libraries failed",
+                "downloadLibSuc": "Libraries downloaded",
                 "downloadErr": "Error downloading the client!",
                 "success": "Client successfully downloaded!"
             },
@@ -65,22 +71,29 @@
         },
         "ForgeManager": {
             "client": {
-                "download": "Downloading Forge libraries, please wait...",
+                "install": "Launching the installer",
                 "downloadErr": "Error downloading Forge libraries!",
                 "success": "Libraries downloaded successfully!"
             },
             "info": {
-                "errJsonParsing": "Error parsing Json data",
-                "verNotFound": "Forge version %s not found",
+                "errForgeVersion": "Forge version not found",
+                "notFoundJava": "Java was not found. Please install Java JDK to continue",
                 "errClientParsing": "Error parsing client data"
+            }
+        },
+        "NeoforgeManager": {
+            "info": {
+                "errForgeVersion": "NeoForge version not found"
             }
         },
         "MirrorManager": {
             "client": {
                 "notFound": "Client not found!",
                 "download": "Client found, downloading ...",
+                "downloadLib": "Additional libraries found, downloading...",
                 "downloadErr": "Error downloading client!",
                 "unpacking": "Client loaded, unpacking ...",
+                "unpackingLib": "Libraries loaded, unpacking ...",
                 "unpackingErr": "Error unpacking client!",
                 "profileErr": "Error loading the profile!",
                 "success": "Client loaded successfully!"

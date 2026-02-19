@@ -1,10 +1,10 @@
+import { JsonHelper } from "@aurora-launcher/core";
 import type { AuthProvider } from "@root/components/auth/providers";
 import { Inject, Service } from "typedi";
 
 import { WebRequest } from "../../../WebRequest";
 import { WebResponse } from "../../../WebResponse";
 import { AbstractRequest } from "../../AbstractRequest";
-import { JsonHelper } from "@aurora-launcher/core";
 
 @Service()
 export class ProfilesWebRequest extends AbstractRequest {
@@ -20,7 +20,7 @@ export class ProfilesWebRequest extends AbstractRequest {
 
         try {
             data = JsonHelper.fromJson(req.body);
-        } catch (error) {
+        } catch {
             return res.error(400, "BadRequestException");
         }
 

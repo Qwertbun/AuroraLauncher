@@ -21,7 +21,7 @@ export class HelpCommand extends AbstractCommand {
 
     invoke(): void {
         const commandsList: Map<Category, AbstractCommand[]> = new Map(
-            Object.values(Category).map((c) => [c, []]),
+            Object.values(Category).map((c): [Category, AbstractCommand[]] => [c, []]),
         );
 
         this.commandsManager.commands.forEach((command: AbstractCommand) => {
