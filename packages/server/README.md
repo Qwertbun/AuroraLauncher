@@ -62,16 +62,4 @@ These paths are ignored in `.gitignore`.
 
 See `README_HWID_BANS.md`.
 
-## Publish To GitHub
-
-If this folder is not a Git repository yet:
-
-```bash
-git init
-git add .
-git commit -m "Prepare public release"
-git branch -M main
-git remote add origin https://github.com/<your-user>/<your-repo>.git
-git push -u origin main
-```
 </h4>
