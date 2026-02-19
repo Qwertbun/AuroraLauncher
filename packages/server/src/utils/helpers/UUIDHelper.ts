@@ -14,6 +14,10 @@ export class UUIDHelper {
      * @returns A string with dashes inserted in the appropriate places.
      */
     static getWithDashes(uuid: string): string {
-        return uuid.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5");
+        const normalizedUUID = uuid.replace(/-/g, "");
+        if (!/^[0-9a-fA-F]{32}$/.test(normalizedUUID)) {
+            return uuid;
+        }
+        return normalizedUUID.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5");
     }
 }

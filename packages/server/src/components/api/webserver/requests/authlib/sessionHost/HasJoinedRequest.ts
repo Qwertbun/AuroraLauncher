@@ -1,5 +1,6 @@
 import type { AuthProvider } from "@root/components/auth/providers";
 import { AuthlibManager } from "@root/components/authlib";
+import { UUIDHelper } from "@root/utils";
 import { Inject, Service } from "typedi";
 
 import { WebRequest } from "../../../WebRequest";
@@ -32,6 +33,7 @@ export class HasJoinedWebRequest extends AbstractRequest {
         } catch (error) {
             return res.error(400, error.message);
         }
+        const userUUID = UUIDHelper.getWithoutDashes(user.userUUID);
 
         const textures: any = {};
         if (user.skinUrl?.length > 0) {
@@ -53,7 +55,7 @@ export class HasJoinedWebRequest extends AbstractRequest {
         const texturesValue = Buffer.from(
             JsonHelper.toJson({
                 timestamp: Date.now(),
-                profileId: user.userUUID,
+                profileId: userUUID,
                 profileName: username,
                 signatureRequired: true,
                 textures,
@@ -61,7 +63,7 @@ export class HasJoinedWebRequest extends AbstractRequest {
         ).toString("base64");
 
         res.json({
-            id: user.userUUID,
+            id: userUUID,
             name: username,
             properties: [
                 {

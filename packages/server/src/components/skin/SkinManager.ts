@@ -10,14 +10,21 @@ export class SkinManager {
     }
 
     getSkin(uuid: string, username: string): string {
-        return this.skinUrl.replace("{uuid}", uuid).replace("{username}", username);
+        return this.resolveTemplate(this.skinUrl, uuid, username);
     }
 
-    getCape(uuid: string, username: string) {
-        return this.capeUrl.replace("{uuid}", uuid).replace("{username}", username);
+    getCape(uuid: string, username: string): string {
+        return this.resolveTemplate(this.capeUrl, uuid, username);
     }
 
     getDomainUrl() {
         return new URL(this.skinUrl).hostname;
+    }
+
+    private resolveTemplate(template: string, uuid: string, username: string): string {
+        // Encode replacements to keep generated URLs valid for non-latin/special usernames.
+        return template
+            .replace(/\{uuid\}/g, encodeURIComponent(uuid))
+            .replace(/\{username\}/g, encodeURIComponent(username));
     }
 }
